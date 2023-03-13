@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hello Bulma!</title>
+  <link rel="stylesheet" href="assets/css/spectre-exp.min.css">
+  <link rel="stylesheet" href="assets/css/spectre-icons.min.css">
+  <link rel="stylesheet" href="assets/css/spectre.min.css">
+</head>
+
+<body>
+  <script src="assets/js/vue.global.min.js"></script>
+  <script src="assets/js/validator.min.js"></script>
+  <script src="assets/js/tocsv.js"></script>
+
+
+  <div id="app">
+    <div class="hero bg-gray">
+      <div class="hero-body">
+        <h1>{{ title }}</h1>
+        <p>{{subtitle}}</p>
+      </div>
+    </div>
+    <form action="">
+      <div class="columns m-1">
+        <div class="column col-6 col-xs-12">
+
+          <div :class="[forms.name.issuccess==false ? 'has-error' : '', 'form-group']">
+            <label class="form-label" for="input-example-1">{{forms.name.title}}<span
+                class="m-1 label label-warning label-rounded text-tiny">必須</span></label>
+            <input class="form-input" :class="[forms.name.issuccess ? 'is-success' : '']" type="text"
+              id="input-example-1" :placeholder="forms.name.defaultValue" v-model="forms.name.value">
+            <p v-if="forms.name.issuccess != null" class="form-input-hint">{{forms.name.message}}</p>
+          </div>
+
+          <div :class="[forms.email.issuccess==false ? 'has-error' : '', 'form-group']">
+            <label class="form-label" for="input-example-1">{{forms.email.title}}<span
+                class="m-1 label label-warning label-rounded text-tiny">必須</span></label>
+            <input class="form-input" :class="[forms.email.issuccess ? 'is-success' : '']" type="text"
+              id="input-example-1" :placeholder="forms.email.defaultValue" v-model="forms.email.value">
+            <p v-if="forms.email.issuccess != null" class="form-input-hint">{{forms.email.message}}</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-radio form-inline">
+              <input type="radio" name="gender" v-model="forms.gender" value="男性"><i class="form-icon"></i> 男性
+            </label>
+            <label class="form-radio form-inline">
+              <input type="radio" name="gender" v-model="forms.gender" value="女性"><i class="form-icon"></i> 女性
+            </label>
+          </div>
+
+          <div v-if="forms.gender=='男性'">
+            <div class="form-group">
+              <label class="form-checkbox form-inline">
+                <input type="checkbox" checked=""><i class="form-icon"></i> 彼女１
+              </label>
+              <label class="form-checkbox form-inline">
+                <input type="checkbox"><i class="form-icon"></i> 彼女２
+              </label>
+            </div>
+          </div>
+
+          <div v-if="forms.gender=='女性'">
+            <div class="form-group">
+              <label class="form-checkbox form-inline">
+                <input type="checkbox" checked=""><i class="form-icon"></i> 彼氏１
+              </label>
+              <label class="form-checkbox form-inline">
+                <input type="checkbox"><i class="form-icon"></i> 彼氏２
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="form-select-example-1">到着地</label>
+            <select class="form-select" id="form-select-example-1" v-model="forms.tocounty">
+              <option>中国</option>
+              <option>アメリカ</option>
+              <option>ベトナム</option>
+              <option>タイ</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-switch">
+              <input type="checkbox" v-model="forms.returnFlg"><i class="form-icon"></i> 返信要否
+            </label>
+            <textarea class="form-input" id="input-example-20" placeholder="連絡事項" rows="3"
+              :disabled="!forms.returnFlg"></textarea>
+          </div>
+
+          <button type="button" class="btn btn-primary" @click="btnPrimaryClick">登録</button>
+          <p v-if="outputFlg == true" class="form-input-hint">CSVファイルを出力しました。</p>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          title: 'Step1申請者勤務先情報',
+          subtitle: '中国ビザ申請事前ヒヤリングシート：申請者の勤務先情報をとビザ種類等をご記入ください。（申請者は同じ会社であれば、複数人をご記入ください）',
+          forms: {
+            name: {
+              title: '名前',
+              value: "",
+              defaultValue: "山田　太郎",
+              issuccess: null,
+              message: ""
+            },
+
+            email: {
+              title: 'メール',
+              value: "",
+              defaultValue: "xxxxx@xxxx.xx",
+              issuccess: null,
+              message: ""
+            },
+            gender: "",
+            tocounty: "",
+            returnFlg: false,
+            message: "",
+          },
+          outputFlg: null,
+          output_table:[],
+          output_form:{
+            no:'No.1',
+            name:'日本　太郎',
+            city:'東京',
+            visaType:'(M)一次30日滞在業務査証',
+            isnormal:'普通',
+            planDate:'4/30',
+            companyName:'日本精密機器株式会社（製造業）',
+            depName:'R&D事業部',
+            bossName:'田中　三四郎',
+            phone:'0334561234',
+            applicantTitle:'課長',
+            applicantPhone:'0334652111',
+            companyAddress:'東京都千代田区千代田1-2-3　日本ビルディング13階',
+            relationship:'雇用主'
+          }
+        }
+      },
+      methods: {
+        btnPrimaryClick() {
+          let outputFlg = true;
+          let isEmpty, isFullWidth, isEmail;
+
+          isEmpty = validator.isEmpty(this.forms.name.value);
+          if (!isEmpty) {
+            isFullWidth = validator.isFullWidth(this.forms.name.value);
+            if (isFullWidth) {
+              this.forms.name.issuccess = true;
+              this.forms.name.message = ""
+            } else {
+              this.forms.name.message = "氏名には、全角文字で入力してください。";
+              this.forms.name.issuccess = false;
+              outputFlg = false;
+            }
+
+          } else {
+            this.forms.name.message = "ご記入ください（必須）";
+            this.forms.name.issuccess = false;
+            outputFlg = false;
+          }
+
+          isEmpty = validator.isEmpty(this.forms.email.value);
+          if (!isEmpty) {
+            isEmail = validator.isEmail(this.forms.email.value);
+            if (isEmail) {
+              this.forms.email.issuccess = true;
+              this.forms.email.message = ""
+            } else {
+              this.forms.email.message = "メールアドレスの形式を確認してください。";
+              this.forms.email.issuccess = false;
+              outputFlg = false;
+            }
+
+          } else {
+            this.forms.email.message = "ご記入ください（必須）";
+            this.forms.email.issuccess = false;
+            outputFlg = false;
+          }
+
+          if (outputFlg) {
+            let rows = [];
+            let row = `"氏名","メール","性別","到着地","返信要否","連絡事項"`
+            rows.push(row);
+
+            row = "";
+            row += '"' + this.forms.name.value + '",';
+            row += '"' + this.forms.email.value + '",';
+            row += '"' + this.forms.gender + '",';
+            row += '"' + this.forms.tocounty + '",';
+            row += '"' + this.forms.returnFlg + '",';
+            row += '"' + this.forms.message + '"';
+            rows.push(row);
+
+            let csv = rows.join("\n")
+
+            downloadCsv(csv);
+          }
+
+          this.outputFlg = outputFlg;
+
+        },
+
+
+      }
+    }).mount('#app')
+
+
+
+  </script>
+
+</body>
+
+</html>
