@@ -17,86 +17,111 @@
 
 
   <div id="app">
-    <div class="hero bg-gray">
+
+    <div class="hero hero-sm bg-dark">
       <div class="hero-body">
         <h1>{{ title }}</h1>
         <p>{{subtitle}}</p>
       </div>
     </div>
-    <form action="">
-      <div class="columns m-1">
-        <div class="column col-6 col-xs-12">
 
-          <div :class="[forms.name.issuccess==false ? 'has-error' : '', 'form-group']">
-            <label class="form-label" for="input-example-1">{{forms.name.title}}<span
-                class="m-1 label label-warning label-rounded text-tiny">必須</span></label>
-            <input class="form-input" :class="[forms.name.issuccess ? 'is-success' : '']" type="text"
-              id="input-example-1" :placeholder="forms.name.defaultValue" v-model="forms.name.value">
-            <p v-if="forms.name.issuccess != null" class="form-input-hint">{{forms.name.message}}</p>
-          </div>
-
-          <div :class="[forms.email.issuccess==false ? 'has-error' : '', 'form-group']">
-            <label class="form-label" for="input-example-1">{{forms.email.title}}<span
-                class="m-1 label label-warning label-rounded text-tiny">必須</span></label>
-            <input class="form-input" :class="[forms.email.issuccess ? 'is-success' : '']" type="text"
-              id="input-example-1" :placeholder="forms.email.defaultValue" v-model="forms.email.value">
-            <p v-if="forms.email.issuccess != null" class="form-input-hint">{{forms.email.message}}</p>
-          </div>
-
-          <div class="form-group">
-            <label class="form-radio form-inline">
-              <input type="radio" name="gender" v-model="forms.gender" value="男性"><i class="form-icon"></i> 男性
-            </label>
-            <label class="form-radio form-inline">
-              <input type="radio" name="gender" v-model="forms.gender" value="女性"><i class="form-icon"></i> 女性
-            </label>
-          </div>
-
-          <div v-if="forms.gender=='男性'">
-            <div class="form-group">
-              <label class="form-checkbox form-inline">
-                <input type="checkbox" checked=""><i class="form-icon"></i> 彼女１
-              </label>
-              <label class="form-checkbox form-inline">
-                <input type="checkbox"><i class="form-icon"></i> 彼女２
-              </label>
-            </div>
-          </div>
-
-          <div v-if="forms.gender=='女性'">
-            <div class="form-group">
-              <label class="form-checkbox form-inline">
-                <input type="checkbox" checked=""><i class="form-icon"></i> 彼氏１
-              </label>
-              <label class="form-checkbox form-inline">
-                <input type="checkbox"><i class="form-icon"></i> 彼氏２
-              </label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="form-select-example-1">到着地</label>
-            <select class="form-select" id="form-select-example-1" v-model="forms.tocounty">
-              <option>中国</option>
-              <option>アメリカ</option>
-              <option>ベトナム</option>
-              <option>タイ</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-switch">
-              <input type="checkbox" v-model="forms.returnFlg"><i class="form-icon"></i> 返信要否
-            </label>
-            <textarea class="form-input" id="input-example-20" placeholder="連絡事項" rows="3"
-              :disabled="!forms.returnFlg"></textarea>
-          </div>
-
-          <button type="button" class="btn btn-primary" @click="btnPrimaryClick">登録</button>
-          <p v-if="outputFlg == true" class="form-input-hint">CSVファイルを出力しました。</p>
-        </div>
+    <div class="columns m-1" v-if="!showflg.form">
+      <div class="column">
+        <button type="button" class="btn btn-primary mx-2" @click="btnAdd">追加</button>
+        <button type="button" class="btn btn-primary mx-2" @click="btnDel">削除</button>
+        <button type="button" class="btn btn-primary mx-2" @click="btnUpd">修正</button>
+        <button type="button" class="btn btn-primary mx-2" @click="btnCSV">CSV出力</button>
+        <p v-if="outputFlg == true" class="form-input-hint">CSVファイルを出力しました。</p>
       </div>
-    </form>
+    </div>
+
+    <table class="table table-striped table-hover text-center" style="font-size: 12px;">
+      <thead>
+        <tr>
+          <th v-for="item in output_form_title_table"><span v-html="item"></span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td v-for="item in output_form">{{item}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="columns m-1" v-if="showflg.form">
+      <div class="column col-6 col-xs-12">
+
+        <div :class="[forms.name.issuccess==false ? 'has-error' : '', 'form-group']">
+          <label class="form-label" for="input-example-1">{{forms.name.title}}<span
+              class="m-1 label label-warning label-rounded text-tiny">必須</span></label>
+          <input class="form-input" :class="[forms.name.issuccess ? 'is-success' : '']" type="text" id="input-example-1"
+            :placeholder="forms.name.defaultValue" pattern="[ぁ-んァ-ヶー一-龠　]+" v-model="forms.name.value">
+          <p v-if="forms.name.issuccess != null" class="form-input-hint">{{forms.name.message}}</p>
+        </div>
+
+        <div :class="[forms.email.issuccess==false ? 'has-error' : '', 'form-group']">
+          <label class="form-label" for="input-example-1">{{forms.email.title}}<span
+              class="m-1 label label-warning label-rounded text-tiny">必須</span></label>
+          <input class="form-input" :class="[forms.email.issuccess ? 'is-success' : '']" type="text"
+            id="input-example-1" :placeholder="forms.email.defaultValue" v-model="forms.email.value">
+          <p v-if="forms.email.issuccess != null" class="form-input-hint">{{forms.email.message}}</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-radio form-inline">
+            <input type="radio" name="gender" v-model="forms.gender" value="男性"><i class="form-icon"></i> 男性
+          </label>
+          <label class="form-radio form-inline">
+            <input type="radio" name="gender" v-model="forms.gender" value="女性"><i class="form-icon"></i> 女性
+          </label>
+        </div>
+
+        <div v-if="forms.gender=='男性'">
+          <div class="form-group">
+            <label class="form-checkbox form-inline">
+              <input type="checkbox" checked=""><i class="form-icon"></i> 彼女１
+            </label>
+            <label class="form-checkbox form-inline">
+              <input type="checkbox"><i class="form-icon"></i> 彼女２
+            </label>
+          </div>
+        </div>
+
+        <div v-if="forms.gender=='女性'">
+          <div class="form-group">
+            <label class="form-checkbox form-inline">
+              <input type="checkbox" checked=""><i class="form-icon"></i> 彼氏１
+            </label>
+            <label class="form-checkbox form-inline">
+              <input type="checkbox"><i class="form-icon"></i> 彼氏２
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="form-select-example-1">到着地</label>
+          <select class="form-select" id="form-select-example-1" v-model="forms.tocounty">
+            <option>中国</option>
+            <option>アメリカ</option>
+            <option>ベトナム</option>
+            <option>タイ</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-switch">
+            <input type="checkbox" v-model="forms.returnFlg"><i class="form-icon"></i> 返信要否
+          </label>
+          <textarea class="form-input" id="input-example-20" placeholder="連絡事項" rows="3"
+            :disabled="!forms.returnFlg"></textarea>
+        </div>
+
+        <button type="button" class="btn btn-primary mx-2" @click="btnPrimary">登録</button>
+        <button type="button" class="btn btn-primary mx-2" @click="btnBreak">廃棄</button>
+      </div>
+    </div>
+
+
   </div>
 
   <script>
@@ -130,27 +155,53 @@
             message: "",
           },
           outputFlg: null,
-          output_table:[],
-          output_form:{
-            no:'No.1',
-            name:'日本　太郎',
-            city:'東京',
-            visaType:'(M)一次30日滞在業務査証',
-            isnormal:'普通',
-            planDate:'4/30',
-            companyName:'日本精密機器株式会社（製造業）',
-            depName:'R&D事業部',
-            bossName:'田中　三四郎',
-            phone:'0334561234',
-            applicantTitle:'課長',
-            applicantPhone:'0334652111',
-            companyAddress:'東京都千代田区千代田1-2-3　日本ビルディング13階',
-            relationship:'雇用主'
-          }
+          output_table: [],
+          output_form: {
+            no: '記入例⇒',
+            name: '日本　太郎',
+            city: '東京',
+            visaType: '(M)一次30日滞在業務査証',
+            isnormal: '普通',
+            planDate: '4/30',
+            companyName: '日本精密機器株式会社（製造業）',
+            depName: 'R&D事業部',
+            bossName: '田中　三四郎',
+            phone: '0334561234',
+            applicantTitle: '課長',
+            applicantPhone: '0334652111',
+            companyAddress: '東京都千代田区千代田1-2-3　日本ビルディング13階',
+            relationship: '雇用主'
+          },
+          output_form_title: {
+            no: 'No.',
+            name: '申請者\n氏名',
+            city: '申請地',
+            visaType: '申請ビザ種類\n（ブルダウンからご選択下さい）',
+            isnormal: '普通\nor\n加急',
+            planDate: '出発\n予定日',
+            companyName: '勤務先会社名\n（主な事業内容or業種）',
+            depName: '所属部署名',
+            bossName: '上司氏名',
+            phone: '勤務先電話\n（ハイフンなし）',
+            applicantTitle: '申請者役職',
+            applicantPhone: '申請者勤務先\n電話番号',
+            companyAddress: '会社\n住所',
+            relationship: '会社との\n続柄'
+          },
+          state: '普通',
+          showflg: {
+            form: false,
+          },
+        }
+      },
+      computed: {
+        output_form_title_table() {
+          let values = Object.values(this.output_form_title);
+          return values.map((str) => str.replace(/\n/g, "<br />"));
         }
       },
       methods: {
-        btnPrimaryClick() {
+        btnPrimary() {
           let outputFlg = true;
           let isEmpty, isFullWidth, isEmail;
 
@@ -190,6 +241,8 @@
             outputFlg = false;
           }
 
+          this.state='普通';
+
           if (outputFlg) {
             let rows = [];
             let row = `"氏名","メール","性別","到着地","返信要否","連絡事項"`
@@ -213,6 +266,45 @@
 
         },
 
+        btnBreak(){
+          this.state='普通';
+          this.showByState();
+        },
+
+        btnAdd(){
+          this.state='追加';
+          this.showByState();
+        },
+
+        btnDel(){
+          this.state='削除';
+          this.showByState();
+        },
+
+        btnUpd(){
+          this.state='更新';
+          this.showByState();
+        },
+
+        showByState(){
+          switch (this.state) {
+            case '普通':
+              this.showflg.form = false;
+              break;
+            case '追加':
+              this.showflg.form = true;
+              break;
+            case '削除':
+              this.showflg.form = true;
+              break;
+            case '更新':
+              this.showflg.form = true;
+              break;
+          
+            default:
+              break;
+          }
+        },
 
       }
     }).mount('#app')
