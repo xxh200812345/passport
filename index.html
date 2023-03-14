@@ -24,7 +24,6 @@
         <p>{{subtitle}}</p>
       </div>
     </div>
-
     <div class="columns m-1" v-if="!showflg.form">
       <div class="column">
         <button type="button" class="btn btn-primary mx-2" @click="btnAdd">追加</button>
@@ -50,6 +49,23 @@
 
     <div class="columns m-1" v-if="showflg.form">
       <div class="column col-6 col-xs-12">
+
+        <div v-for="(item,index) in forms1" class="form-group">
+          <label class="form-label" :for="'input-id-'+index">{{item.title}}
+            <span class="m-1 label label-warning label-rounded text-tiny">必須</span>
+          </label>
+          <input class="form-input" type="text" :id="'input-id-'+index" :placeholder="item.placeholder"
+            :pattern="item.reg" v-model="item.value">
+          <p v-if="item.empty_msg!='' || item.reg_msg!=''" class="form-input-hint">{{item.empty_msg}}{{item.reg_msg}}
+          </p>
+
+        </div>
+
+
+        <!--
+
+
+
 
         <div :class="[forms.name.issuccess==false ? 'has-error' : '', 'form-group']">
           <label class="form-label" for="input-example-1">{{forms.name.title}}<span
@@ -116,6 +132,8 @@
             :disabled="!forms.returnFlg"></textarea>
         </div>
 
+        -->
+
         <button type="button" class="btn btn-primary mx-2" @click="btnPrimary">登録</button>
         <button type="button" class="btn btn-primary mx-2" @click="btnBreak">廃棄</button>
       </div>
@@ -133,6 +151,26 @@
         return {
           title: 'Step1申請者勤務先情報',
           subtitle: '中国ビザ申請事前ヒヤリングシート：申請者の勤務先情報をとビザ種類等をご記入ください。（申請者は同じ会社であれば、複数人をご記入ください）',
+
+          forms1_json: [{
+            "name": "name", "title": "申請者\\n氏名", "error": false, "reg": "[ぁ-んァ-ヶー一-龠　]+", "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder":
+              "日本　太郎"
+          }, { "name": "city", "title": "申請地", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "visaType", "title": "申請ビザ種類\\n（ブルダウンからご選択下さい）", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "isnormal", "title": "普通\\nor\\n加急", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "planDate", "title": "出発\\n予定日", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "companyName", "title": "勤務先会社名\\n（主な事業内容or業種）", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "depName", "title": "所属部署名", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "bossName", "title": "上司氏名", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "phone", "title": "勤務先電話\\n（ハイフンなし）", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "applicantTitle", "title": "申請者役職", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "applicantPhone", "title": "申請者勤務先\\n電話番号", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "companyAddress", "title": "会社\\n住所", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "relationship", "title": "会社との\\n続柄", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }],
+
+          forms1: [
+            {
+              name: 'name',
+              title: '申請者\n氏名',
+              error: false,
+              reg: '[ぁ-んァ-ヶー一-龠　]+',
+              reg_msg: '',
+              empty: true,
+              empty_msg: '',
+              value: '',
+              placeholder: '日本　太郎'
+            },
+
+          ],
           forms: {
             name: {
               title: '名前',
@@ -194,6 +232,12 @@
           },
         }
       },
+      created() {
+        for (let item of this.forms1_json) {
+          this.forms1.push(item);
+        }
+        console.log(this.forms1);
+      },
       computed: {
         output_form_title_table() {
           let values = Object.values(this.output_form_title);
@@ -241,7 +285,7 @@
             outputFlg = false;
           }
 
-          this.state='普通';
+          this.state = '普通';
 
           if (outputFlg) {
             let rows = [];
@@ -266,27 +310,27 @@
 
         },
 
-        btnBreak(){
-          this.state='普通';
+        btnBreak() {
+          this.state = '普通';
           this.showByState();
         },
 
-        btnAdd(){
-          this.state='追加';
+        btnAdd() {
+          this.state = '追加';
           this.showByState();
         },
 
-        btnDel(){
-          this.state='削除';
+        btnDel() {
+          this.state = '削除';
           this.showByState();
         },
 
-        btnUpd(){
-          this.state='更新';
+        btnUpd() {
+          this.state = '更新';
           this.showByState();
         },
 
-        showByState(){
+        showByState() {
           switch (this.state) {
             case '普通':
               this.showflg.form = false;
@@ -300,14 +344,16 @@
             case '更新':
               this.showflg.form = true;
               break;
-          
+
             default:
               break;
           }
         },
 
       }
-    }).mount('#app')
+    }).mount('#app');
+
+
 
 
 
