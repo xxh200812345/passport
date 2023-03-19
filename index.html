@@ -51,12 +51,48 @@
       <div class="column col-6 col-xs-12">
 
         <div v-for="(item,index) in forms1" class="form-group">
-          <label class="form-label" :for="'input-id-'+index">{{item.title}}
-            <span class="m-1 label label-warning label-rounded text-tiny">必須</span>
-          </label>
-          <input class="form-input" type="text" :id="'input-id-'+index" :placeholder="item.placeholder"
-            :pattern="item.reg" v-model="item.value">
-          <p v-if="item.empty_msg!='' || item.reg_msg!=''" class="form-input-hint">{{item.empty_msg}}{{item.reg_msg}}
+
+          <div v-if="item.type == 'select'">
+            <label class="form-label" :for="'select-id-'+index">{{item.title}}
+              <span class="m-1 label label-warning label-rounded text-tiny">必須</span>
+            </label>
+            <select class="form-select" :id="'select-id-'+index" v-model="item.value">
+              <option v-for="(item1,index1) in item.select" value="index1">{{item1}}</option>
+            </select>
+          </div>
+
+
+          <div v-else-if="item.type == 'text'">
+            <label class="form-label" :for="'input-id-'+index">{{item.title}}
+              <span class="m-1 label label-warning label-rounded text-tiny">必須</span>
+            </label>
+            <input class="form-input" type="text" :id="'input-id-'+index" :placeholder="item.placeholder"
+              :pattern="item.reg" v-model="item.value">
+          </div>
+
+          <div v-else-if="item.type == 'date'">
+            <label class="form-label" :for="'input-id-'+index">{{item.title}}
+              <span class="m-1 label label-warning label-rounded text-tiny">必須</span>
+            </label>
+            <input class="form-input" type="date" :id="'input-id-'+index" :placeholder="item.placeholder"
+               v-model="item.value">
+          </div>
+
+          <div v-else-if="item.type == 'tel'">
+            <label class="form-label" :for="'input-id-'+index">{{item.title}}
+              <span class="m-1 label label-warning label-rounded text-tiny">必須</span>
+            </label>
+            <input class="form-input" type="text" :pattern="item.reg" :id="'input-id-'+index" :placeholder="item.placeholder"
+               v-model="item.value">
+          </div>
+
+          <div v-else>
+            <span style="color:red"> TYPE ERROR, item.type: {{item.type}} </span>
+          </div>
+
+          <p v-if="item.error" class="form-input-hint">{{item.empty_msg}}
+          </p>
+          <p v-if="item.empty" class="form-input-hint">{{item.reg_msg}}
           </p>
 
         </div>
@@ -152,24 +188,8 @@
           title: 'Step1申請者勤務先情報',
           subtitle: '中国ビザ申請事前ヒヤリングシート：申請者の勤務先情報をとビザ種類等をご記入ください。（申請者は同じ会社であれば、複数人をご記入ください）',
 
-          forms1_json: [{
-            "name": "name", "title": "申請者\\n氏名", "error": false, "reg": "[ぁ-んァ-ヶー一-龠　]+", "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder":
-              "日本　太郎"
-          }, { "name": "city", "title": "申請地", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "visaType", "title": "申請ビザ種類\\n（ブルダウンからご選択下さい）", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "isnormal", "title": "普通\\nor\\n加急", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "planDate", "title": "出発\\n予定日", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "companyName", "title": "勤務先会社名\\n（主な事業内容or業種）", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "depName", "title": "所属部署名", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "bossName", "title": "上司氏名", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "phone", "title": "勤務先電話\\n（ハイフンなし）", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "applicantTitle", "title": "申請者役職", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "applicantPhone", "title": "申請者勤務先\\n電話番号", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "companyAddress", "title": "会社\\n住所", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }, { "name": "relationship", "title": "会社との\\n続柄", "error": false, "reg": null, "reg_msg": null, "empty": true, "empty_msg": null, "value": null, "placeholder": null }],
-
+          forms1_json: [{"name": "name", "title": "申請者\n氏名", "type": "text", "error": false, "placeholder": "日本　太郎", "reg": "[ぁ-んァ-ヶー一-龠　]+", "reg_msg": "平仮名、片仮名、漢字、空欄を入力してください", "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "city", "title": "申請地", "type": "select", "error": false, "placeholder": null, "reg": null, "reg_msg": null, "empty": false, "empty_msg": "必須項目です", "value": null, "select": ["東京", "名古屋", "大阪"]}, {"name": "visaType", "title": "申請ビザ種類\n（ブルダウン からご選択下さい）", "type": "select", "error": false, "placeholder": null, "reg": null, "reg_msg": null, "empty": false, "empty_msg": "必須項目です", "value": null, "select": ["(M)一 次60日滞在業務査証", "(M)一次90日滞在業務査証"]}, {"name": "isnormal", "title": "普通\nor\n加急", "type": "select", "error": false, "placeholder": null, "reg": null, "reg_msg": null, "empty": false, "empty_msg": "必須項目です", "value": null, "select": ["普通", "加急"]}, {"name": "planDate", "title": "出発\n予定日", "type": "date", "error": false, "placeholder": 45046, "reg": null, "reg_msg": null, "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "companyName", "title": "勤務先会社名\n（主な事業内容or業種）", "type": "text", "error": false, "placeholder": "日本精密機器株式会社（製造業）", "reg": null, "reg_msg": null, "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "depName", "title": "所属部署名", "type": "text", "error": false, "placeholder": "R&D事業部", "reg": null, "reg_msg": null, "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "bossName", "title": "上司氏名", "type": "text", "error": false, "placeholder": "田中　三四郎", "reg": "[ぁ-んァ-ヶー一-龠　]+", "reg_msg": "平仮名、片仮名、漢字、空欄を入力してください", "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "phone", "title": "勤務先電話\n（ハイフンなし）", "type": "tel", "error": false, "placeholder": "0334561234", "reg": "[0-9]{11}", "reg_msg": "数字を入力してください", "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "applicantTitle", "title": "申請者役職", "type": "text", "error": false, "placeholder": "課長", "reg": "[ぁ-んァ-ヶー一-龠]+", "reg_msg": "平仮名、片仮名、漢字を入力して ください", "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "applicantPhone", "title": "申請者勤務先\n電話番号", "type": "tel", "error": false, "placeholder": "0334652111", "reg": "[0-9]{11}", "reg_msg": "数字を入力してください", "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "companyAddress", "title": "会社\n住所", "type": "text", "error": false, "placeholder": "東京都千代田区千代田1-2-3　日本ビルディング13階", "reg": null, "reg_msg": null, "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}, {"name": "relationship", "title": "会社との\n続柄", "type": "text", "error": false, "placeholder": "雇用主", "reg": "[ぁ-んァ-ヶー一-龠]+", "reg_msg": "平仮名、片仮名、漢字を入力してください", "empty": false, "empty_msg": "必須項目です", "value": null, "select": null}],
           forms1: [
-            {
-              name: 'name',
-              title: '申請者\n氏名',
-              error: false,
-              reg: '[ぁ-んァ-ヶー一-龠　]+',
-              reg_msg: '',
-              empty: true,
-              empty_msg: '',
-              value: '',
-              placeholder: '日本　太郎'
-            },
-
           ],
           forms: {
             name: {
@@ -210,22 +230,6 @@
             companyAddress: '東京都千代田区千代田1-2-3　日本ビルディング13階',
             relationship: '雇用主'
           },
-          output_form_title: {
-            no: 'No.',
-            name: '申請者\n氏名',
-            city: '申請地',
-            visaType: '申請ビザ種類\n（ブルダウンからご選択下さい）',
-            isnormal: '普通\nor\n加急',
-            planDate: '出発\n予定日',
-            companyName: '勤務先会社名\n（主な事業内容or業種）',
-            depName: '所属部署名',
-            bossName: '上司氏名',
-            phone: '勤務先電話\n（ハイフンなし）',
-            applicantTitle: '申請者役職',
-            applicantPhone: '申請者勤務先\n電話番号',
-            companyAddress: '会社\n住所',
-            relationship: '会社との\n続柄'
-          },
           state: '普通',
           showflg: {
             form: false,
@@ -240,8 +244,12 @@
       },
       computed: {
         output_form_title_table() {
-          let values = Object.values(this.output_form_title);
-          return values.map((str) => str.replace(/\n/g, "<br />"));
+          let titleArray = [];
+          titleArray.push('No.');
+          for (let i = 0; i < this.forms1_json.length; i++) {
+            titleArray.push(this.forms1_json[i].title);
+          }
+          return titleArray.map((str) => str.replace(/\n/g, "<br />"));
         }
       },
       methods: {
